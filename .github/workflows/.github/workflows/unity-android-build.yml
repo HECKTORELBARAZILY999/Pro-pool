@@ -1,0 +1,27 @@
+name: Unity Android Build
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Cache Unity
+        uses: actions/cache@v3
+        with:
+          path: ${{ github.workspace }}/Library
+          key: Library-${{ runner.os }}-${{ hashFiles('**/Packages/manifest.json') }}
+          restore-keys: |
+            Library-${{ runner.os }}-
+      - name: Unity - Builder
+        uses: game-ci/unity-builder@v2
+        with:
+          targetPlatform: Android
+          unityVersion: 2022.3.20f1
+      - name: Upload APK
+        uses: actions/upload-artifact@v3
+        with:
+          name: android-apk
+          path: build/Android/*.apk
